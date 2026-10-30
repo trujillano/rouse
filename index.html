@@ -341,7 +341,7 @@
                         <img id="vaniaPhoto" 
                              src="rouse1.jpeg" 
                              alt="Vania Oviedo" 
-                             class="w-full h-full object-cover transform transition-transform duration-700 hover:scale-105"https://trujillano.github.io/rouse/
+                             class="w-full h-full object-cover transform transition-transform duration-700 hover:scale-105"
                              onerror="this.onerror=null; this.src='https://placehold.co/400x400/1e293b/c59b27?text=Rosa+Maquera';">
                     </div>
                 </div>
@@ -448,41 +448,6 @@
 </script>
 
                 
-
-
-
-
-
-              
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
                 <!-- Location & Venue Details -->
                 <div class="w-full max-w-md bg-slate-800/40 rounded-2xl p-5 my-4 border border-slate-700/60 text-left space-y-3">
@@ -663,12 +628,11 @@
 
         // Add Event to Google Calendar
         function addToCalendar() {
-            const title = encodeURIComponent("Celebración Vania Oviedo");
+            const title = encodeURIComponent("Celebración Rosa Maquera");
             const details = encodeURIComponent("¡Acompáñanos a celebrar junto a Rosa Maquera!");
-            const location = encodeURIComponent("Salón de Eventos La Casona");
-            const startDate = "20260814T200000";
-            const endDate = "20260815T020000";
-
+            const location = encodeURIComponent("Salón de Eventos Astrid y la 5ta De Iván");
+            const startDate = "20261030T200000";
+            const endDate = "20261031T020000";
             const calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startDate}/${endDate}&details=${details}&location=${location}`;
             window.open(calendarUrl, '_blank');
         }
