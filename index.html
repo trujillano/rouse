@@ -631,8 +631,10 @@
             const title = encodeURIComponent("Celebración Rosa Maquera");
             const details = encodeURIComponent("¡Acompáñanos a celebrar junto a Rosa Maquera!");
             const location = encodeURIComponent("Salón de Eventos Astrid y la 5ta De Iván");
-            const startDate = "20261030T200000";
-            const endDate = "20261031T020000";
+
+            const startDate = "20261030T133000";
+            const endDate = "20261030T193000";
+                
             const calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startDate}/${endDate}&details=${details}&location=${location}`;
             window.open(calendarUrl, '_blank');
         }
