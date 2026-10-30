@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invitación Digital - Rosa Maquera</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gold: {
+                            100: '#fbf4ec',
+                            300: '#e5c392',
+                            500: '#c59b27',
+                            600: '#b08218',
+                            700: '#8c6211',
+                        },
+                        blush: {
+                            50: '#fff5f7',
+                            100: '#fde8ed',
+                            200: '#fbc2cf',
+                            500: '#f07897',
+                        },
+                        navy: {
+                            900: '#0f172a',
+                            950: '#070a13',
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'serif'],
+                        sans: ['Montserrat', 'sans-serif'],
+                        cursive: ['"Alex Brush"', 'cursive'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #070a13 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        /* 3D Envelope Perspective */
+        .perspective-1000 {
+            perspective: 1200px;
+        }
+
+        /* Envelope Styling */
+        .envelope-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 480px;
+            height: 340px;
+            margin: 0 auto;
+            transition: transform 0.8s ease;
+        }
+
+        .envelope {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #1e293b;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 30px rgba(197, 155, 39, 0.2);
+            overflow: visible;
+        }
+
+        /* Envelope Flap Animation */
+        .flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(180deg, #334155 0%, #1e293b 100%);
+            clip-path: polygon(0 0, 100% 0, 50% 100%);
+            transform-origin: top center;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 30;
+            border-top: 2px solid #c59b27;
+        }
+
+        .flap-inside {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(180deg, #1e1b4b 0%, #0f172a 100%);
+            clip-path: polygon(0 0, 100% 0, 50% 100%);
+            transform-origin: top center;
+            transform: rotateX(180deg);
+            backface-visibility: hidden;
+            z-index: 29;
+        }
+
+        .envelope.open .flap {
+            transform: rotateX(180deg);
+            z-index: 10;
+        }
+
+        /* Pocket / Front Covers of Envelope */
+        .pocket-left {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #1e293b 0%, #334155 100%);
+            clip-path: polygon(0 0, 50% 50%, 0 100%);
+            z-index: 20;
+            border-bottom-left-radius: 12px;
+        }
+
+        .pocket-right {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(-45deg, #1e293b 0%, #334155 100%);
+            clip-path: polygon(100% 0, 50% 50%, 100% 100%);
+            z-index: 20;
+            border-bottom-right-radius: 12px;
+        }
+
+        .pocket-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(0deg, #0f172a 0%, #1e293b 100%);
+            clip-path: polygon(0 100%, 50% 45%, 100% 100%);
+            z-index: 25;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+            border-bottom: 2px solid #c59b27;
+        }
+
+        /* Seal / Wax Button */
+        .wax-seal {
+            position: absolute;
+            top: 140px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 70px;
+            background: radial-gradient(circle, #e5c392 0%, #c59b27 60%, #8c6211 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 35;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.4);
+            transition: all 0.3s ease;
+            animation: pulse-glow 2s infinite;
+        }
+
+        .wax-seal:hover {
+            transform: translateX(-50%) scale(1.1);
+            box-shadow: 0 6px 20px rgba(197, 155, 39, 0.6), inset 0 2px 4px rgba(255,255,255,0.6);
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 4px 15px rgba(0,0,0,0.5), 0 0 15px rgba(197, 155, 39, 0.4); }
+            50% { box-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 0 25px rgba(197, 155, 39, 0.8); }
+        }
+
+        /* Letter Inside Envelope */
+        .letter-preview {
+            position: absolute;
+            top: 15px;
+            left: 5%;
+            width: 90%;
+            height: 310px;
+            background: #fff;
+            border-radius: 8px;
+            z-index: 15;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background-image: radial-gradient(#f1f5f9 1px, transparent 1px);
+            background-size: 16px 16px;
+        }
+
+        /* Animation when opening */
+        .envelope.open .letter-preview {
+            transform: translateY(-220px);
+            z-index: 26;
+        }
+
+        /* Shimmer Gold Effect */
+        .gold-border {
+            border: 2px solid transparent;
+            border-image: linear-gradient(to bottom right, #fbf4ec, #c59b27, #8c6211, #e5c392) 1;
+        }
+
+        .gold-text-gradient {
+            background: linear-gradient(135deg, #bf953f 0%, #fcf6ba 25%, #b38728 50%, #fbf5b7 75%, #aa771c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Particle Canvas background */
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Countdown timer box */
+        .timer-box {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(197, 155, 39, 0.3);
+        }
+
+        /* Smooth reveal transitions */
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        .fade-in-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-between min-h-screen relative text-slate-800 py-8 px-4">
+
+    <!-- Background Canvas for Floating Particles -->
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- Floating Audio Control -->
+    <div class="fixed top-5 right-5 z-50">
+        <button id="musicToggle" class="w-12 h-12 rounded-full bg-slate-900/80 text-gold-300 border border-gold-500/50 flex items-center justify-center shadow-lg hover:scale-110 transition-transform backdrop-blur-md">
+            <i id="musicIcon" class="fas fa-music text-lg"></i>
+        </button>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <main class="w-full max-w-2xl mx-auto z-10 my-auto flex flex-col items-center">
+
+        <!-- INTRO ENVELOPE SECTION -->
+        <section id="envelope-section" class="w-full flex flex-col items-center justify-center my-8">
+            <div class="text-center mb-8">
+                <p class="text-gold-300 tracking-widest text-sm uppercase font-semibold mb-2">Has recibido una invitación</p>
+                <h1 class="font-serif text-3xl md:text-4xl text-white font-bold">Rosa Maquera</h1>
+                <p class="text-blush-200 font-cursive text-2xl mt-1">Te invita a celebrar</p>
+            </div>
+
+            <div class="perspective-1000 w-full px-2">
+                <div id="envelopeWrapper" class="envelope-wrapper">
+                    <div id="envelope" class="envelope">
+                        <!-- Flap Top -->
+                        <div class="flap"></div>
+                        
+                        <!-- Side Pockets -->
+                        <div class="pocket-left"></div>
+                        <div class="pocket-right"></div>
+                        <div class="pocket-bottom"></div>
+
+                        <!-- Wax Seal Button -->
+                        <div id="waxSeal" class="wax-seal" onclick="openEnvelope()">
+                            <div class="text-slate-900 font-serif font-bold text-xl tracking-tighter">VO</div>
+                        </div>
+
+                        <!-- Letter Card Inside -->
+                        <div class="letter-preview border-2 border-amber-200">
+                            <span class="text-gold-600 font-serif font-semibold text-xs tracking-widest uppercase">Invitación Especial</span>
+                            <h2 class="font-serif text-2xl text-slate-900 font-bold my-1">Rosa Maquera </h2>
+                            <p class="text-xs text-slate-500 font-medium">30 DE OCTUBRE DEL 2026</p>
+                            <div class="my-3 border-t border-b border-gold-300/50 py-2 w-full">
+                                <p class="text-xs italic text-slate-600">"Hay momentos en la vida que son especiales, pero compartirlos con quienes amas los hace inolvidables."</p>
+                            </div>
+                            <span class="text-xs font-semibold text-gold-700 bg-gold-100 px-3 py-1 rounded-full mt-1">CLICK ABAJO PARA VER DETALLES</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Open Button -->
+            <button id="openBtn" onclick="openEnvelope()" class="mt-12 bg-gradient-to-r from-gold-600 via-gold-500 to-gold-700 text-white font-semibold py-3.5 px-8 rounded-full shadow-lg shadow-gold-600/30 hover:shadow-gold-500/50 hover:scale-105 active:scale-95 transition-all duration-300 flex items-center gap-3 border border-gold-300/40 group">
+                <i class="fas fa-envelope-open transition-transform group-hover:-rotate-12"></i>
+                <span class="tracking-wide text-sm">CLICK PARA ABRIR LA INVITACIÓN</span>
+            </button>
+        </section>
+
+        <!-- INVITATION CARD CONTENT (HIDDEN INITIALLY, REVEALED ON OPEN) -->
+        <section id="invitation-card" class="hidden w-full bg-slate-900/90 text-slate-100 rounded-3xl shadow-2xl border border-gold-500/30 overflow-hidden backdrop-blur-xl my-4 fade-in-up">
+            
+            <!-- Header Banner Decor -->
+            <div class="relative h-28 bg-gradient-to-r from-slate-950 via-indigo-950 to-slate-950 flex items-center justify-center border-b border-gold-500/20 overflow-hidden">
+                <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#c59b27_1px,transparent_1px)] [background-size:16px_16px]"></div>
+                <div class="text-center z-10 px-4">
+                    <p class="text-gold-300 font-cursive text-2xl">Nos complace invitarte a</p>
+                    <h3 class="text-xs uppercase tracking-[0.3em] text-slate-300 font-light mt-0.5">Nuestra Celebración Especial</h3>
+                </div>
+            </div>
+
+            <!-- Main Card Content -->
+            <div class="p-6 md:p-10 flex flex-col items-center text-center">
+
+                <!-- Photo Frame Section (Inspired by user's photo) -->
+                <div class="relative group my-4">
+                    <!-- Decorative Gold Ring Outer -->
+                    <div class="absolute -inset-2 rounded-full bg-gradient-to-r from-gold-500 via-blush-200 to-gold-700 opacity-75 blur-sm group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-pulse"></div>
+                    
+                    <!-- Frame Image Box -->
+                    <div class="relative w-48 h-48 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-gold-300/80 shadow-2xl">
+                        <!-- User Provided Photo URL with Fallback -->
+                        <img id="vaniaPhoto" 
+                             src="rouse1.jpeg" 
+                             alt="Vania Oviedo" 
+                             class="w-full h-full object-cover transform transition-transform duration-700 hover:scale-105"
+                             onerror="this.onerror=null; this.src='https://placehold.co/400x400/1e293b/c59b27?text=Rosa+Maquera';">
+                    </div>
+                </div>
+
+                <!-- Host Name -->
+                <h1 class="font-serif text-4xl md:text-5xl font-bold gold-text-gradient my-2 tracking-wide">
+                    Rosa Maquera
+                </h1>
+                
+                <div class="w-24 h-0.5 bg-gradient-to-r from-transparent via-gold-500 to-transparent my-3"></div>
+
+                <!-- Invitation Phrase -->
+                <p class="text-slate-300 max-w-md mx-auto text-sm md:text-base italic font-serif leading-relaxed px-2">
+                    "Quiero compartir este día tan especial lleno de alegría, música y recuerdos inolvidables rodeada de las personas que más aprecio."
+                </p>
+
+                <!-- Date Showcase Banner -->
+                <div class="w-full max-w-md bg-gradient-to-r from-slate-800/80 via-slate-800 to-slate-800/80 rounded-2xl p-6 my-6 border border-gold-500/30 shadow-inner flex flex-col items-center">
+                    <div class="flex items-center justify-center gap-4 text-gold-300 mb-2">
+                        <i class="far fa-calendar-alt text-xl"></i>
+                        <span class="text-xs tracking-widest uppercase font-semibold text-gold-400">Fecha del Evento</span>
+                    </div>
+                    <div class="text-2xl md:text-3xl font-serif font-bold text-white tracking-wider my-1">
+                        VIERNES
+                    </div>
+                    <div class="text-3xl md:text-4xl font-serif font-bold gold-text-gradient my-1">
+                        30 DE  OCTUBRE DEL  2026
+                    </div>
+                    <div class="text-sm text-slate-300 font-medium mt-1">
+                        <i class="far fa-clock text-gold-400 mr-1.5"></i> 13:30 PM
+                    </div>
+                </div>
+
+                <!-- COUNTDOWN TIMER SECTION -->
+               <!-- TU CÓDIGO PERMANECE 100% IGUAL -->
+<!-- COUNTDOWN TIMER SECTION -->
+<div class="w-full max-w-md my-4">
+    <h4 class="text-xs uppercase tracking-widest text-slate-400 font-semibold mb-3">Faltan tan solo:</h4>
+    <div class="grid grid-cols-4 gap-2 md:gap-3 text-slate-900">
+        <div class="timer-box rounded-xl p-2.5 flex flex-col items-center">
+            <span id="days" class="font-serif font-bold text-xl md:text-2xl text-slate-900">00</span>
+            <span class="text-[10px] md:text-xs font-semibold text-slate-600 uppercase">Días</span>
+        </div>
+        <div class="timer-box rounded-xl p-2.5 flex flex-col items-center">
+            <span id="hours" class="font-serif font-bold text-xl md:text-2xl text-slate-900">00</span>
+            <span class="text-[10px] md:text-xs font-semibold text-slate-600 uppercase">Hs</span>
+        </div>
+        <div class="timer-box rounded-xl p-2.5 flex flex-col items-center">
+            <span id="minutes" class="font-serif font-bold text-xl md:text-2xl text-slate-900">00</span>
+            <span class="text-[10px] md:text-xs font-semibold text-slate-600 uppercase">Min</span>
+        </div>
+        <div class="timer-box rounded-xl p-2.5 flex flex-col items-center">
+            <span id="seconds" class="font-serif font-bold text-xl md:text-2xl text-slate-900">00</span>
+            <span class="text-[10px] md:text-xs font-semibold text-slate-600 uppercase">Seg</span>
+        </div>
+    </div>
+</div>
+
+<!-- SOLO AGREGA ESTAS LÍNEAS AL FINAL DE TU PÁGINA (antes de </body>) -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const now = new Date();
+    let targetYear = now.getFullYear();
+
+    // Fecha objetivo: 30 de Octubre a las 13:00:00
+    let targetDate = new Date(targetYear, 9, 30, 13, 0, 0);
+
+    if (now > targetDate) {
+      targetDate = new Date(targetYear + 1, 9, 30, 13, 0, 0);
+    }
+
+    const daysEl = document.getElementById('days');
+    const hoursEl = document.getElementById('hours');
+    const minutesEl = document.getElementById('minutes');
+    const secondsEl = document.getElementById('seconds');
+
+    function updateCountdown() {
+      const currentTime = new Date();
+      const difference = targetDate - currentTime;
+
+      if (difference <= 0) {
+        daysEl.textContent = '00';
+        hoursEl.textContent = '00';
+        minutesEl.textContent = '00';
+        secondsEl.textContent = '00';
+        clearInterval(timerInterval);
+        return;
+      }
+
+      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+      daysEl.textContent = String(days).padStart(2, '0');
+      hoursEl.textContent = String(hours).padStart(2, '0');
+      minutesEl.textContent = String(minutes).padStart(2, '0');
+      secondsEl.textContent = String(seconds).padStart(2, '0');
+    }
+
+    updateCountdown();
+    const timerInterval = setInterval(updateCountdown, 1000);
+  });
+</script>
+
+                
+
+
+
+
+
+              
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <!-- Location & Venue Details -->
+                <div class="w-full max-w-md bg-slate-800/40 rounded-2xl p-5 my-4 border border-slate-700/60 text-left space-y-3">
+                    <div class="flex items-start gap-3.5">
+                        <div class="w-10 h-10 rounded-full bg-gold-500/10 border border-gold-500/30 flex items-center justify-center text-gold-300 shrink-0 mt-0.5">
+                            <i class="fas fa-map-marker-alt text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-serif font-semibold text-white text-base">Ubicación del Evento</h4>
+                            <p class="text-sm text-slate-300 font-medium">Salón de Eventos "Astrid y la 5ta De Iván"</p>
+                            <p class="text-xs text-slate-400 mt-0.5">URB. Manuel Prado ,AV. Sacsayhuaman H-15 , Ciudad Cusco</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3.5 pt-2 border-t border-slate-700/50">
+                        <div class="w-10 h-10 rounded-full bg-gold-500/10 border border-gold-500/30 flex items-center justify-center text-gold-300 shrink-0 mt-0.5">
+                            <i class="fas fa-user-tie text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-serif font-semibold text-white text-base">Código de Vestimenta</h4>
+                            <p class="text-xs text-slate-300">Semi Formal / Elegante</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ACTION BUTTONS GRID -->
+                <div class="w-full max-w-md space-y-3 mt-4">
+                    <!-- WhatsApp RSVP Button -->
+                    <a id="whatsappBtn" href="https://api.whatsapp.com/send/?phone=51976562134&text=Hola+Rouse%2C+confirmo+mi+asistencia+a+tu+evento+el+30+de+Octubre.&type=custom_url&app_absent=0" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3.5 px-6 rounded-xl shadow-lg transition-all duration-300 flex items-center justify-center gap-3 text-sm">
+                        <i class="fab fa-whatsapp text-xl"></i>
+                        <span>Confirmar Asistencia por WhatsApp</span>
+                    </a>
+
+                    <!-- Add to Calendar Button -->
+                    <button onclick="addToCalendar()" class="w-full bg-slate-800 hover:bg-slate-700 text-gold-300 border border-gold-500/40 font-semibold py-3 px-6 rounded-xl shadow transition-all duration-300 flex items-center justify-center gap-3 text-sm">
+                        <i class="far fa-calendar-plus text-lg"></i>
+                        <span>Agendar en Google Calendar</span>
+                    </button>
+
+                    <!-- View Map Location -->
+                  <!-- View Map Location -->
+<a href="https://www.google.com/maps/place/Astrid+y+la+5ta+De+Iv%C3%A1n/@-13.5236702,-71.9512922,634m/data=!3m2!1e3!4b1!4m6!3m5!1s0x916e7f55829bc7ef:0xac7231a9bd68d301!8m2!3d-13.5236702!4d-71.9512922!16s%2Fg%2F11c2l81jqs?entry=ttu&g_ep=EgoyMDI2MTAyNy4wIKXMDSoASAFQAw%3D%3D" target="_blank" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold py-3 px-6 rounded-xl shadow transition-all duration-300 flex items-center justify-center gap-3 text-sm">
+    <i class="fas fa-location-arrow text-gold-400"></i>
+    <span>Ver Ubicación en Google Maps</span>
+</a>
+                </div>
+
+                <!-- Re-open Envelope Button -->
+                <button onclick="closeEnvelope()" class="mt-8 text-xs text-slate-400 hover:text-gold-300 transition-colors flex items-center gap-1.5 underline underline-offset-4">
+                    <i class="fas fa-envelope"></i>
+                    <span>Volver a ver el sobre</span>
+                </button>
+
+            </div>
+
+            <!-- Card Footer -->
+            <div class="bg-slate-950 p-4 text-center border-t border-slate-800/80">
+                <p class="text-xs text-slate-500 font-light">¡Te esperamos para celebrar juntos este inolvidable día!</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer Credit -->
+    <footer class="z-10 text-center py-4 text-xs text-slate-500">
+        Invitación Digital © 2026 - Rosa Maquera
+    </footer>
+
+    <!-- Audio Element (Soft Romantic Ambient Track) -->
+    <audio id="bgMusic" loop preload="auto">
+        <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=soft-piano-10781.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Target Date: August 14, 2026 20:00:00
+        const eventDate = new Date("August 14, 2026 20:00:00").getTime();
+
+        // Audio controls
+        const bgMusic = document.getElementById('bgMusic');
+        const musicToggle = document.getElementById('musicToggle');
+        const musicIcon = document.getElementById('musicIcon');
+        let isPlaying = false;
+
+        musicToggle.addEventListener('click', toggleMusic);
+
+        function toggleMusic() {
+            if (isPlaying) {
+                bgMusic.pause();
+                musicIcon.className = "fas fa-music text-lg";
+                musicToggle.classList.remove('animate-spin');
+            } else {
+                bgMusic.play().then(() => {
+                    isPlaying = true;
+                    musicIcon.className = "fas fa-pause text-lg";
+                }).catch(err => console.log("Audio play blocked by browser:", err));
+            }
+            isPlaying = !isPlaying;
+        }
+
+        // Open Envelope Animation
+        function openEnvelope() {
+            const envelope = document.getElementById('envelope');
+            const envelopeSection = document.getElementById('envelope-section');
+            const invitationCard = document.getElementById('invitation-card');
+
+            // Play open animation on envelope
+            envelope.classList.add('open');
+
+            // Trigger confetti burst
+            setTimeout(() => {
+                confetti({
+                    particleCount: 80,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    colors: ['#c59b27', '#e5c392', '#f07897', '#ffffff']
+                });
+            }, 400);
+
+            // Auto play music on interaction
+            if (!isPlaying) {
+                bgMusic.play().then(() => {
+                    isPlaying = true;
+                    musicIcon.className = "fas fa-pause text-lg";
+                }).catch(() => {});
+            }
+
+            // Hide envelope section and show invitation card
+            setTimeout(() => {
+                envelopeSection.classList.add('hidden');
+                invitationCard.classList.remove('hidden');
+                setTimeout(() => {
+                    invitationCard.classList.add('visible');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }, 50);
+            }, 1200);
+        }
+
+        // Close Envelope (Reset View)
+        function closeEnvelope() {
+            const envelope = document.getElementById('envelope');
+            const envelopeSection = document.getElementById('envelope-section');
+            const invitationCard = document.getElementById('invitation-card');
+
+            invitationCard.classList.remove('visible');
+            setTimeout(() => {
+                invitationCard.classList.add('hidden');
+                envelopeSection.classList.remove('hidden');
+                envelope.classList.remove('open');
+            }, 300);
+        }
+
+        // Countdown Timer Logic
+        function updateTimer() {
+            const now = new Date().getTime();
+            const distance = eventDate - now;
+
+            if (distance < 0) {
+                document.getElementById('days').innerText = "00";
+                document.getElementById('hours').innerText = "00";
+                document.getElementById('minutes').innerText = "00";
+                document.getElementById('seconds').innerText = "00";
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById('days').innerText = days < 10 ? '0' + days : days;
+            document.getElementById('hours').innerText = hours < 10 ? '0' + hours : hours;
+            document.getElementById('minutes').innerText = minutes < 10 ? '0' + minutes : minutes;
+            document.getElementById('seconds').innerText = seconds < 10 ? '0' + seconds : seconds;
+        }
+
+        setInterval(updateTimer, 1000);
+        updateTimer();
+
+        // Add Event to Google Calendar
+        function addToCalendar() {
+            const title = encodeURIComponent("Celebración Vania Oviedo");
+            const details = encodeURIComponent("¡Acompáñanos a celebrar junto a Rosa Maquera!");
+            const location = encodeURIComponent("Salón de Eventos La Casona");
+            const startDate = "20260814T200000";
+            const endDate = "20260815T020000";
+
+            const calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startDate}/${endDate}&details=${details}&location=${location}`;
+            window.open(calendarUrl, '_blank');
+        }
+
+        // Particle Canvas Background Animation
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height + canvas.height;
+                this.size = Math.random() * 2.5 + 0.5;
+                this.speedY = Math.random() * 0.8 + 0.2;
+                this.speedX = (Math.random() - 0.5) * 0.4;
+                this.opacity = Math.random() * 0.6 + 0.2;
+                this.color = Math.random() > 0.5 ? '#c59b27' : '#f07897';
+            }
+
+            update() {
+                this.y -= this.speedY;
+                this.x += this.speedX;
+                if (this.y < -10) {
+                    this.reset();
+                    this.y = canvas.height + 10;
+                }
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = this.opacity;
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = this.color;
+                ctx.fill();
+                ctx.globalAlpha = 1;
+                ctx.shadowBlur = 0;
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            const particleCount = Math.floor((canvas.width * canvas.height) / 18000);
+            for (let i = 0; i < Math.min(particleCount, 60); i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateParticles);
+        }
+
+        initParticles();
+        animateParticles();
+    </script>
+</body>
+</html>
